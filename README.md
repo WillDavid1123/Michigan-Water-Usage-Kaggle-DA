@@ -1,2 +1,14 @@
 # Michigan-Water-Usage-Kaggle-DA
-Analyze water usage by Michigan industries from 2013-2022 using a Kaggle dataset. Python project using NumPy, TKinter, and Matplotlib. 
+Analyze water usage by Michigan industries from 2013-2022 using a Kaggle dataset. Python project using NumPy, TKinter, and Matplotlib.
+
+Libraries Used
+<ul>
+    <li>Numpy: Used to load and preprocess data</li>
+    <li>TKinter: Used to create windows</li>
+    <li>Matplotlib: Used to create plots and graphs</li>
+</ul>
+<br>
+Dev-Log
+<ul>
+    <li>6-28-2024: Initialize Project - loaded data with Numpy and created TKinter window with a single button</li>
+</ul>
