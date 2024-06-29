@@ -11,4 +11,5 @@ Libraries Used
 Dev-Log
 <ul>
     <li>6-28-2024: Initialize Project - loaded data with Numpy and created TKinter window with a single button</li>
+    <li>6-29-2024: Bar Graph day 1 - Created labels for bar graph option, exploring TKinter's geometry options</li>
 </ul>
