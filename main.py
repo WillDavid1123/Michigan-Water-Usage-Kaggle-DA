@@ -4,19 +4,23 @@
 # Imports
 import os
 import pdb
+import math
 # External Libraries (pip installs)
 import numpy as np
 import tkinter as tk
-import matplotlib
+import matplotlib.pyplot as plt
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA = "water_use_data_2013_to_2022.csv"
 NUM_COLS = [i for i in range(1, 8)]
 
 def main():
+    # pdb.set_trace()
     # Load data
     headers = np.genfromtxt(os.path.join(ROOT, DATA), delimiter=",", dtype=str)[0][1:]
-    data = np.genfromtxt(os.path.join(ROOT, DATA), delimiter=",", skip_header=1, usecols=NUM_COLS, dtype=(str, np.int64, np.int64, np.int64, np.int64, str, int))
+    data = np.genfromtxt(os.path.join(ROOT, DATA), delimiter=",", usecols=NUM_COLS, dtype=None, names=True)
+
+    # pdb.set_trace()
 
     # Create main window
     root = tk.Tk()
@@ -40,41 +44,75 @@ def main():
 
 
 def bar_graph(root, mainframe, data, headers, main_labels):
-    '''Create a bar graph with the data specified by the user'''
+    '''Window for creating bar graphs'''
     # Remove main menu elements
     remove_labels(main_labels)
 
     # Create labels
     bar_graph_labels = []
+    b1 = tk.Button(mainframe, text="Back", command=lambda: back_to_main(bar_graph_labels, main_labels))
+    b1.grid(row=1, column=1, padx=(10, 10), pady=(5, 0))
+    bar_graph_labels.append(b1)
+
     l1 = tk.Label(mainframe, text="Bar Graph", font=('bold', 16, "underline"))
-    l1.grid(row=1, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
+    l1.grid(row=2, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
     bar_graph_labels.append(l1)
 
     l2 = tk.Label(mainframe, text="X Axis:")
-    l2.grid(row=2, column=1, padx=(10, 10), pady=(5, 10))
+    l2.grid(row=3, column=1, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(l2)
 
     x_axis_string = tk.StringVar(root)
     x_axis_string.set(headers[0])
     om1 = tk.OptionMenu(mainframe, x_axis_string, headers[0], headers[5], headers[6])
-    om1.grid(row=2, column=2, padx=(10, 10), pady=(5, 10))
+    om1.grid(row=3, column=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om1)
 
     l3 = tk.Label(mainframe, text="Y Axis:")
-    l3.grid(row=3, column=1, padx=(10, 10), pady=(5, 10))
+    l3.grid(row=4, column=1, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(l3)
 
     y_axis_string = tk.StringVar(root)
     y_axis_string.set(headers[1])
     om2 = tk.OptionMenu(mainframe, y_axis_string, headers[1], headers[2], headers[3], headers[4])
-    om2.grid(row=3, column=2, padx=(10, 10), pady=(5, 10))
+    om2.grid(row=4, column=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om2)
 
-    b1 = tk.Button(mainframe, text="Create Bar Graph", command=lambda: create_bar_graph(x_axis_string, y_axis_string, data, headers))
-    b1.grid(row=4, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
-    bar_graph_labels.append(b1)
+    b2 = tk.Button(mainframe, text="Create Bar Graph", command=lambda: create_bar_graph(x_axis_string.get(), y_axis_string.get(), data))
+    b2.grid(row=5, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
+    bar_graph_labels.append(b2)
 
-def create_bar_graph(x_axis, y_axis, data, headers):
+
+def create_bar_graph(x_axis, y_axis, data):
+    '''Create a bar graph with the data specified by the user'''
+
+    x_data = np.unique(data[x_axis])
+    x_ind = data.dtype.names.index(x_axis)
+
+    y_data = np.zeros((len(x_data),))
+    for i, x in enumerate(x_data):
+        rows = np.where(data[:][x_axis] == x)
+        for row in rows[0]:
+            y_data[i] += data[row][y_axis]
+
+    y_height = np.amax(y_data) * 1.1
+    num_x_points = 10
+    if x_axis == 'county':
+        num_x_points = 11
+    elif x_axis == 'industry':
+        num_x_points = 4
+    for i in range(math.ceil(len(x_data) / num_x_points)):
+        fig, ax = plt.subplots(figsize=(14, 5))
+        if num_x_points*(i+1) <= len(x_data):
+            ax.bar(x_data[num_x_points*i:num_x_points*(i+1)], y_data[num_x_points*i:num_x_points*(i+1)], color=["lightsteelblue", "cornflowerblue", "royalblue", "midnightblue", "navy"])
+        else:
+            ax.bar(x_data[num_x_points*i:-1], y_data[num_x_points*i:-1], color=["lightsteelblue", "cornflowerblue", "royalblue", "midnightblue", "navy"])
+        ax.set_title(y_axis + " per " + x_axis)
+        ax.set_ylim([0, y_height])
+        ax.set_xlabel(x_axis)
+        ax.set_ylabel(y_axis)
+
+    plt.show()
     pass
 
 
@@ -82,6 +120,12 @@ def remove_labels(labels):
     '''Remove all labels from the window'''
     for label in labels:
         label.grid_remove()
+
+
+def back_to_main(curr_labels, main_labels):
+    remove_labels(curr_labels)
+    for label in main_labels:
+        label.grid()
 
 
 if __name__ == "__main__":
