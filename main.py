@@ -64,7 +64,8 @@ def bar_graph(root, mainframe, data, headers, main_labels):
 
     x_axis_string = tk.StringVar(root)
     x_axis_string.set(headers[0])
-    om1 = tk.OptionMenu(mainframe, x_axis_string, headers[0], headers[5], headers[6])
+    om1_options = [headers[0], headers[5], headers[6]]
+    om1 = tk.OptionMenu(mainframe, x_axis_string, *om1_options)
     om1.grid(row=3, column=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om1)
 
@@ -74,13 +75,40 @@ def bar_graph(root, mainframe, data, headers, main_labels):
 
     y_axis_string = tk.StringVar(root)
     y_axis_string.set(headers[1])
-    om2 = tk.OptionMenu(mainframe, y_axis_string, headers[1], headers[2], headers[3], headers[4])
+    om2_options = [headers[1], headers[2], headers[3], headers[4]]
+    om2 = tk.OptionMenu(mainframe, y_axis_string, *om2_options)
     om2.grid(row=4, column=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om2)
 
+    l4 = tk.Label(mainframe, text="Specify other data:")
+    l4.grid(row=5, column=1, padx=(10, 10), pady=(5, 10))
+    bar_graph_labels.append(l4)
+
+    limiter_string = tk.StringVar(root)
+    limiter_string.set("")
+    om3_options = [""]
+    om3 = tk.OptionMenu(mainframe, limiter_string, *om3_options)
+    om3.grid(row=6, column=1, columnspan=2, padx=(10, 10), pady=(5, 10))
+    bar_graph_labels.append(om3)
+
+    specify_string = tk.StringVar(root)
+    specify_string.set("None")
+    om4_options = ["None", headers[0], headers[5], headers[6]]
+    om4 = tk.OptionMenu(mainframe, specify_string, *om4_options)#, command=lambda i: change_options(specify_string.get(), data, om3)
+    om4.grid(row=5, column=2, padx=(10, 10), pady=(5, 10))
+    bar_graph_labels.append(om4)
+
     b2 = tk.Button(mainframe, text="Create Bar Graph", command=lambda: create_bar_graph(x_axis_string.get(), y_axis_string.get(), data))
-    b2.grid(row=5, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
+    b2.grid(row=7, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
     bar_graph_labels.append(b2)
+
+
+# def change_options(string, data, options_menu):
+#     '''Change the specify options to new options'''
+#     if string == "None":
+#         return
+#     for option in np.unique(data[string]):
+
 
 
 def create_bar_graph(x_axis, y_axis, data):
