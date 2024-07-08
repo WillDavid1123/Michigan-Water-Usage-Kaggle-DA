@@ -58,17 +58,6 @@ def bar_graph(root, mainframe, data, headers, main_labels):
     l1.grid(row=2, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
     bar_graph_labels.append(l1)
 
-    l2 = tk.Label(mainframe, text="X Axis:")
-    l2.grid(row=3, column=1, padx=(10, 10), pady=(5, 10))
-    bar_graph_labels.append(l2)
-
-    x_axis_string = tk.StringVar(root)
-    x_axis_string.set(headers[0])
-    om1_options = [headers[0], headers[5], headers[6]]
-    om1 = tk.OptionMenu(mainframe, x_axis_string, *om1_options)
-    om1.grid(row=3, column=2, padx=(10, 10), pady=(5, 10))
-    bar_graph_labels.append(om1)
-
     l3 = tk.Label(mainframe, text="Y Axis:")
     l3.grid(row=4, column=1, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(l3)
@@ -80,40 +69,72 @@ def bar_graph(root, mainframe, data, headers, main_labels):
     om2.grid(row=4, column=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om2)
 
-    l4 = tk.Label(mainframe, text="Specify other data:")
+    l4 = tk.Label(mainframe, text="Limit data:")
     l4.grid(row=5, column=1, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(l4)
 
     limiter_string = tk.StringVar(root)
     limiter_string.set("")
     om3_options = [""]
-    om3 = tk.OptionMenu(mainframe, limiter_string, *om3_options)
+    om3 = tk.OptionMenu(mainframe, limiter_string, *om3_options, command=lambda t: print(limiter_string.get()))
     om3.grid(row=6, column=1, columnspan=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om3)
 
     specify_string = tk.StringVar(root)
     specify_string.set("None")
-    om4_options = ["None", headers[0], headers[5], headers[6]]
-    om4 = tk.OptionMenu(mainframe, specify_string, *om4_options)#, command=lambda i: change_options(specify_string.get(), data, om3)
+    om4_options = ["None", headers[5], headers[6]]
+    om4 = tk.OptionMenu(mainframe, specify_string, *om4_options, command=lambda i: change_options(specify_string.get(), limiter_string, data, om3))
     om4.grid(row=5, column=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om4)
 
-    b2 = tk.Button(mainframe, text="Create Bar Graph", command=lambda: create_bar_graph(x_axis_string.get(), y_axis_string.get(), data))
+    l2 = tk.Label(mainframe, text="X Axis:")
+    l2.grid(row=3, column=1, padx=(10, 10), pady=(5, 10))
+    bar_graph_labels.append(l2)
+
+    x_axis_string = tk.StringVar(root)
+    x_axis_string.set(headers[0])
+    curr_x_string = tk.StringVar(root)
+    curr_x_string.set(headers[0])
+    om1_options = [headers[0], headers[5], headers[6]]
+    om1 = tk.OptionMenu(mainframe, x_axis_string, *om1_options, command=lambda y: update_limiter(x_axis_string.get(), curr_x_string, om4, specify_string))
+    om1.grid(row=3, column=2, padx=(10, 10), pady=(5, 10))
+    bar_graph_labels.append(om1)
+
+    b2 = tk.Button(mainframe, text="Create Bar Graph", command=lambda: create_bar_graph(x_axis_string.get(), y_axis_string.get(), limiter_string.get(), data))
     b2.grid(row=7, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
     bar_graph_labels.append(b2)
 
 
-# def change_options(string, data, options_menu):
-#     '''Change the specify options to new options'''
-#     if string == "None":
-#         return
-#     for option in np.unique(data[string]):
+def update_limiter(new_option, old_option, limit_menu, specify_string):
+    '''Update limiter options menu so it includes every x-axis option BUT the one selected'''
+    limit_menu['menu'].delete(new_option)
+    specify_string.set(old_option.get())
+    limit_menu['menu'].add_command(label=old_option.get(), command=tk._setit(specify_string, old_option.get()))
+    old_option.set(new_option)
+    pass
+
+
+def change_options(string, new_string, data, options_menu):
+    '''Change the limiter options to new options'''
+    # print("Limiter before: " + new_string.get())
+    if string == "None":
+        new_string.set("")
+        options_menu['menu'].delete(0, 'end')
+        options_menu['menu'].add_command(label="", command=tk._setit(new_string, ""))
+        return
+    
+    options_menu['menu'].delete(0, 'end')
+    for option in np.unique(data[string]):
+        options_menu['menu'].add_command(label=option, command=tk._setit(new_string, option))
+    new_string.set(np.unique(data[string])[0])
+    # print("Limiter after: " + new_string.get())
 
 
 
-def create_bar_graph(x_axis, y_axis, data):
+def create_bar_graph(x_axis, y_axis, limiter, data):
     '''Create a bar graph with the data specified by the user'''
 
+    print("Limiter String: " + limiter)
     x_data = np.unique(data[x_axis])
     x_ind = data.dtype.names.index(x_axis)
 
