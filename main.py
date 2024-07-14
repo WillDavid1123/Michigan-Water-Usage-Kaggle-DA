@@ -96,7 +96,7 @@ def bar_graph(root, mainframe, data, headers, main_labels):
     curr_x_string = tk.StringVar(root)
     curr_x_string.set(headers[0])
     om1_options = [headers[0], headers[5], headers[6]]
-    om1 = tk.OptionMenu(mainframe, x_axis_string, *om1_options, command=lambda y: update_limiter(x_axis_string.get(), curr_x_string, om4, specify_string))
+    om1 = tk.OptionMenu(mainframe, x_axis_string, *om1_options, command=lambda y: update_limiter(x_axis_string, curr_x_string, om4, specify_string, limiter_string, data, om3))
     om1.grid(row=3, column=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om1)
 
@@ -105,29 +105,32 @@ def bar_graph(root, mainframe, data, headers, main_labels):
     bar_graph_labels.append(b2)
 
 
-def update_limiter(new_option, old_option, limit_menu, specify_string):
+def update_limiter(new_option, old_option, limit_menu, specify_string, limiter_string, data, limiter_menu):
     '''Update limiter options menu so it includes every x-axis option BUT the one selected'''
-    limit_menu['menu'].delete(new_option)
-    specify_string.set(old_option.get())
-    limit_menu['menu'].add_command(label=old_option.get(), command=tk._setit(specify_string, old_option.get()))
-    old_option.set(new_option)
+    limit_menu['menu'].delete(new_option.get())
+    specify_string.set("None")
+    change_options("None", limiter_string, data, limiter_menu)
+    limit_menu['menu'].add_command(label=old_option.get(), command=tk._setit(specify_string, old_option.get(), lambda p: change_options(specify_string.get(), limiter_string, data, limiter_menu)))
+    old_option.set(new_option.get())
     pass
 
 
 def change_options(string, new_string, data, options_menu):
     '''Change the limiter options to new options'''
-    # print("Limiter before: " + new_string.get())
+    print("Limiter before: " + new_string.get())
     if string == "None":
+        print("None Selected")
         new_string.set("")
         options_menu['menu'].delete(0, 'end')
         options_menu['menu'].add_command(label="", command=tk._setit(new_string, ""))
         return
     
     options_menu['menu'].delete(0, 'end')
+    print(string)
     for option in np.unique(data[string]):
         options_menu['menu'].add_command(label=option, command=tk._setit(new_string, option))
     new_string.set(np.unique(data[string])[0])
-    # print("Limiter after: " + new_string.get())
+    print("Limiter after: " + new_string.get())
 
 
 

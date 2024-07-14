@@ -16,4 +16,5 @@ Dev-Log
     <li>7-4-2024: Bar Graph day 3 - Created bars graphs with x and y data specified by user, creates multiple graphs if 1 graph would be too crowded. All graphs have the same y-axis so data can be fairly compared.</li>
     <li>7-7-2024: Bar Graph day 4 - Started working on creating a specifier for bar graphs so users can be more specific in their analysis</li>
     <li>7-8-2024: Bar Graph day 5 - Specifier works so when a user selects a limiting field, the options for that field are in the next menu, working on those updated options functioning as changes/clicks on the menu</li>
+    <li>7-14-2024: Bar Graph day 6 - OptionsMenus now work so that users cannot limit the option on the x-axis and can change between x-axis options while limiting the others. Next task is having this reflected in the produced graphs.</li>
 </ul>
