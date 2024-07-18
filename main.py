@@ -100,7 +100,7 @@ def bar_graph(root, mainframe, data, headers, main_labels):
     om1.grid(row=3, column=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om1)
 
-    b2 = tk.Button(mainframe, text="Create Bar Graph", command=lambda: create_bar_graph(x_axis_string.get(), y_axis_string.get(), limiter_string.get(), data))
+    b2 = tk.Button(mainframe, text="Create Bar Graph", command=lambda: create_bar_graph(x_axis_string.get(), y_axis_string.get(), specify_string.get(), limiter_string.get(), data))
     b2.grid(row=7, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
     bar_graph_labels.append(b2)
 
@@ -117,35 +117,42 @@ def update_limiter(new_option, old_option, limit_menu, specify_string, limiter_s
 
 def change_options(string, new_string, data, options_menu):
     '''Change the limiter options to new options'''
-    print("Limiter before: " + new_string.get())
     if string == "None":
-        print("None Selected")
         new_string.set("")
         options_menu['menu'].delete(0, 'end')
         options_menu['menu'].add_command(label="", command=tk._setit(new_string, ""))
         return
     
     options_menu['menu'].delete(0, 'end')
-    print(string)
     for option in np.unique(data[string]):
         options_menu['menu'].add_command(label=option, command=tk._setit(new_string, option))
     new_string.set(np.unique(data[string])[0])
-    print("Limiter after: " + new_string.get())
 
 
 
-def create_bar_graph(x_axis, y_axis, limiter, data):
+def create_bar_graph(x_axis, y_axis, limited, limiter, data):
     '''Create a bar graph with the data specified by the user'''
 
+    print("Limited field: " + limited)
     print("Limiter String: " + limiter)
+    if limited == "county" or limited == "industry":
+        limiter = bytes(limiter[2:-1], 'utf-8')
+    elif limited == "year":
+        limiter = int(limiter)
     x_data = np.unique(data[x_axis])
     x_ind = data.dtype.names.index(x_axis)
 
     y_data = np.zeros((len(x_data),))
     for i, x in enumerate(x_data):
-        rows = np.where(data[:][x_axis] == x)
-        for row in rows[0]:
-            y_data[i] += data[row][y_axis]
+        if limited != "None":
+            a = np.array(np.where(data[:][x_axis] == x))
+            rows = a[np.isin(a, np.array(np.where(data[:][limited] == limiter)))]
+            for row in rows:
+                y_data[i] += data[row][y_axis]
+        else:
+            rows = np.where(data[:][x_axis] == x)
+            for row in rows[0]:
+                y_data[i] += data[row][y_axis]
 
     y_height = np.amax(y_data) * 1.1
     num_x_points = 10
@@ -153,13 +160,20 @@ def create_bar_graph(x_axis, y_axis, limiter, data):
         num_x_points = 11
     elif x_axis == 'industry':
         num_x_points = 4
+    if limited != "year":
+        limiter = str(limiter)[2:-1]
+    else:
+        limiter = str(limiter)
     for i in range(math.ceil(len(x_data) / num_x_points)):
         fig, ax = plt.subplots(figsize=(14, 5))
         if num_x_points*(i+1) <= len(x_data):
             ax.bar(x_data[num_x_points*i:num_x_points*(i+1)], y_data[num_x_points*i:num_x_points*(i+1)], color=["lightsteelblue", "cornflowerblue", "royalblue", "midnightblue", "navy"])
         else:
             ax.bar(x_data[num_x_points*i:-1], y_data[num_x_points*i:-1], color=["lightsteelblue", "cornflowerblue", "royalblue", "midnightblue", "navy"])
-        ax.set_title(y_axis + " per " + x_axis)
+        if limited != "None":
+            ax.set_title(y_axis + " per " + x_axis + " in " + str(limited) + ": " + limiter)
+        else:
+            ax.set_title(y_axis + " per " + x_axis)
         ax.set_ylim([0, y_height])
         ax.set_xlabel(x_axis)
         ax.set_ylabel(y_axis)
