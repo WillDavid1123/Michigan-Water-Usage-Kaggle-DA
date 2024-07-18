@@ -3,7 +3,7 @@
 
 # Imports
 import os
-import pdb
+import pdb # pdb.set_trace()
 import math
 # External Libraries (pip installs)
 import numpy as np
@@ -15,12 +15,9 @@ DATA = "water_use_data_2013_to_2022.csv"
 NUM_COLS = [i for i in range(1, 8)]
 
 def main():
-    # pdb.set_trace()
     # Load data
     headers = np.genfromtxt(os.path.join(ROOT, DATA), delimiter=",", dtype=str)[0][1:]
     data = np.genfromtxt(os.path.join(ROOT, DATA), delimiter=",", usecols=NUM_COLS, dtype=None, names=True)
-
-    # pdb.set_trace()
 
     # Create main window
     root = tk.Tk()
@@ -49,19 +46,23 @@ def bar_graph(root, mainframe, data, headers, main_labels):
     remove_labels(main_labels)
 
     # Create labels
+        # Back Button
     bar_graph_labels = []
     b1 = tk.Button(mainframe, text="Back", command=lambda: back_to_main(bar_graph_labels, main_labels))
     b1.grid(row=1, column=1, padx=(10, 10), pady=(5, 0))
     bar_graph_labels.append(b1)
 
+        # Title Label
     l1 = tk.Label(mainframe, text="Bar Graph", font=('bold', 16, "underline"))
     l1.grid(row=2, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
     bar_graph_labels.append(l1)
 
+        # Y-Axis label
     l3 = tk.Label(mainframe, text="Y Axis:")
     l3.grid(row=4, column=1, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(l3)
 
+        # Y-Axis Options Menu
     y_axis_string = tk.StringVar(root)
     y_axis_string.set(headers[1])
     om2_options = [headers[1], headers[2], headers[3], headers[4]]
@@ -69,10 +70,12 @@ def bar_graph(root, mainframe, data, headers, main_labels):
     om2.grid(row=4, column=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om2)
 
+        # Data Limiter Label
     l4 = tk.Label(mainframe, text="Limit data:")
     l4.grid(row=5, column=1, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(l4)
 
+        # Data Limiter Options Menu 1
     limiter_string = tk.StringVar(root)
     limiter_string.set("")
     om3_options = [""]
@@ -80,6 +83,7 @@ def bar_graph(root, mainframe, data, headers, main_labels):
     om3.grid(row=6, column=1, columnspan=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om3)
 
+        # Data Limiter Options Menu 2
     specify_string = tk.StringVar(root)
     specify_string.set("None")
     om4_options = ["None", headers[5], headers[6]]
@@ -87,10 +91,12 @@ def bar_graph(root, mainframe, data, headers, main_labels):
     om4.grid(row=5, column=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om4)
 
+        # X-Axis Label
     l2 = tk.Label(mainframe, text="X Axis:")
     l2.grid(row=3, column=1, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(l2)
 
+        # X-Axis Options Menu
     x_axis_string = tk.StringVar(root)
     x_axis_string.set(headers[0])
     curr_x_string = tk.StringVar(root)
@@ -100,6 +106,7 @@ def bar_graph(root, mainframe, data, headers, main_labels):
     om1.grid(row=3, column=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om1)
 
+        # Create Bar Graph Button
     b2 = tk.Button(mainframe, text="Create Bar Graph", command=lambda: create_bar_graph(x_axis_string.get(), y_axis_string.get(), specify_string.get(), limiter_string.get(), data))
     b2.grid(row=7, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
     bar_graph_labels.append(b2)
@@ -117,12 +124,14 @@ def update_limiter(new_option, old_option, limit_menu, specify_string, limiter_s
 
 def change_options(string, new_string, data, options_menu):
     '''Change the limiter options to new options'''
+    # If there should be no options showing
     if string == "None":
         new_string.set("")
         options_menu['menu'].delete(0, 'end')
         options_menu['menu'].add_command(label="", command=tk._setit(new_string, ""))
         return
     
+    # If there should be options for the given limiter
     options_menu['menu'].delete(0, 'end')
     for option in np.unique(data[string]):
         options_menu['menu'].add_command(label=option, command=tk._setit(new_string, option))
@@ -133,15 +142,14 @@ def change_options(string, new_string, data, options_menu):
 def create_bar_graph(x_axis, y_axis, limited, limiter, data):
     '''Create a bar graph with the data specified by the user'''
 
-    print("Limited field: " + limited)
-    print("Limiter String: " + limiter)
+    # Prepare variables for data collection
     if limited == "county" or limited == "industry":
         limiter = bytes(limiter[2:-1], 'utf-8')
     elif limited == "year":
         limiter = int(limiter)
     x_data = np.unique(data[x_axis])
-    x_ind = data.dtype.names.index(x_axis)
 
+    #Grab and calculate data for bar graph
     y_data = np.zeros((len(x_data),))
     for i, x in enumerate(x_data):
         if limited != "None":
@@ -154,6 +162,7 @@ def create_bar_graph(x_axis, y_axis, limited, limiter, data):
             for row in rows[0]:
                 y_data[i] += data[row][y_axis]
 
+    # Prepare variables for bar graph creation
     y_height = np.amax(y_data) * 1.1
     num_x_points = 10
     if x_axis == 'county':
@@ -164,6 +173,8 @@ def create_bar_graph(x_axis, y_axis, limited, limiter, data):
         limiter = str(limiter)[2:-1]
     else:
         limiter = str(limiter)
+
+    # Create bar graph(s)
     for i in range(math.ceil(len(x_data) / num_x_points)):
         fig, ax = plt.subplots(figsize=(14, 5))
         if num_x_points*(i+1) <= len(x_data):
@@ -189,6 +200,7 @@ def remove_labels(labels):
 
 
 def back_to_main(curr_labels, main_labels):
+    '''Remove old window elements and replace main menu elements'''
     remove_labels(curr_labels)
     for label in main_labels:
         label.grid()
