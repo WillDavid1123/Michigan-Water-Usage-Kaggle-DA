@@ -101,7 +101,7 @@ def bar_graph(root, mainframe, data, headers, main_labels):
     limiter_string = tk.StringVar(root)
     limiter_string.set("")
     om3_options = [""]
-    om3 = tk.OptionMenu(mainframe, limiter_string, *om3_options, command=lambda t: print(limiter_string.get()))
+    om3 = tk.OptionMenu(mainframe, limiter_string, *om3_options)
     om3.grid(row=6, column=1, columnspan=2, padx=(10, 10), pady=(5, 10))
     bar_graph_labels.append(om3)
 
@@ -198,21 +198,60 @@ def multiline_graph(root, mainframe, data, headers, main_labels):
     y_axis_string = tk.StringVar(root)
     multi_line_graph_labels = create_base_labels(main_labels, mainframe, "Multi-line Graph", y_axis_string, [headers[1], headers[2], headers[3], headers[4]])
 
-        # X-Axis Label
-    l3 = tk.Label(mainframe, text="X Axis:")
-    l3.grid(row=3, column=1, padx=(10, 10), pady=(5, 10))
+        # X-Axis Labels
+    l1 = tk.Label(mainframe, text="X Axis:")
+    l1.grid(row=3, column=1, padx=(10, 10), pady=(5, 10))
+    multi_line_graph_labels.append(l1)
+
+    l2 = tk.Label(mainframe, text="year")
+    l2.grid(row=3, column=2, padx=(10, 10), pady=(5, 10))
+    multi_line_graph_labels.append(l2)
+
+        # Compare by Label
+    l3 = tk.Label(mainframe, text="Compare:")
+    l3.grid(row=5, column=1, padx=(10, 10), pady=(5, 10))
     multi_line_graph_labels.append(l3)
 
-        # X-Axis Options Menu
-    x_axis_string = tk.StringVar(root)
-    x_axis_string.set(headers[5])
-    curr_x_string = tk.StringVar(root)
-    curr_x_string.set(headers[5])
-    om2_options = [headers[5], headers[6]]
-    om2 = tk.OptionMenu(mainframe, x_axis_string, *om2_options)
-    om2.grid(row=3, column=2, padx=(10, 10), pady=(5, 10))
-    multi_line_graph_labels.append(om2)
-    
+        # Compare By Options Menu
+    compare_by_string = tk.StringVar(root)
+    compare_by_string.set(headers[0])
+    om1_options = [headers[0], headers[5]]
+    om1 = tk.OptionMenu(mainframe, compare_by_string, *om1_options)
+    om1.grid(row=5, column=2, padx=(10, 10), pady=(5, 10))
+    multi_line_graph_labels.append(om1)
+
+        # Compare Options Menus
+    comp1, comp1_string, comp2, comp2_string, comp3, comp3_string = create_compare_options(root, mainframe, data)
+    multi_line_graph_labels.append(comp1)
+    multi_line_graph_labels.append(comp2)
+    multi_line_graph_labels.append(comp3)
+
+
+def create_compare_options(root, mainframe, data):
+    '''Create options menus for the "Compare" option'''
+    comp1_string = tk.StringVar(root)
+    comp1_string.set("")
+    comp1_options = [""]
+    comp1 = tk.OptionMenu(mainframe, comp1_string, *comp1_options)
+    comp1.grid(row=6, column=1, columnspan=2, padx=(10, 10), pady=(5, 10))
+    change_options("county", comp1_string, data, comp1)
+
+    comp2_string = tk.StringVar(root)
+    comp2_string.set("")
+    comp2_options = [""]
+    comp2 = tk.OptionMenu(mainframe, comp2_string, *comp2_options)
+    comp2.grid(row=7, column=1, columnspan=2, padx=(10, 10), pady=(5, 10))
+    change_options("county", comp2_string, data, comp2)
+
+    comp3_string = tk.StringVar(root)
+    comp3_string.set("")
+    comp3_options = [""]
+    comp3 = tk.OptionMenu(mainframe, comp3_string, *comp3_options)
+    comp3.grid(row=8, column=1, columnspan=2, padx=(10, 10), pady=(5, 10))
+    change_options("county", comp3_string, data, comp3)
+
+    return comp1, comp1_string, comp2, comp2_string, comp3, comp3_string
+
 
 def update_limiter(new_option, old_option, limit_menu, specify_string, limiter_string, data, limiter_menu):
     '''Update limiter options menu so it includes every x-axis option BUT the one selected'''

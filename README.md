@@ -19,4 +19,5 @@ Dev-Log
     <li>7-14-2024: Bar Graph day 6 - OptionsMenus now work so that users cannot limit the option on the x-axis and can change between x-axis options while limiting the others. Next task is having this reflected in the produced graphs.</li>
     <li>7-18-2024: Bar Graph day 7 (Final) - Bar graphs now show data with or without selected limiters, small optimizations to presentation. Added comments and spacing for code for readability.</li>
     <li>7-20-2024: Multi-line Graph day 1 - Started work on multi-line graphs, simplified code by making similar label creation its own function.</li>
+    <li>7-21-2024: Multi-line Graph day 2 - Continued work on creating elements for multi-line window: added 'Compare' menus so users can select 3 data points to compare on a line graph</li>
 </ul>
