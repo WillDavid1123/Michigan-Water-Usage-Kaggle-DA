@@ -18,6 +18,7 @@ def main():
     # Load data
     headers = np.genfromtxt(os.path.join(ROOT, DATA), delimiter=",", dtype=str)[0][1:]
     data = np.genfromtxt(os.path.join(ROOT, DATA), delimiter=",", usecols=NUM_COLS, dtype=None, names=True)
+    # pdb.set_trace()
 
     # Create main window
     root = tk.Tk()
@@ -151,6 +152,7 @@ def create_bar_graph(x_axis, y_axis, limited, limiter, data):
             a = np.array(np.where(data[:][x_axis] == x))
             rows = a[np.isin(a, np.array(np.where(data[:][limited] == limiter)))]
             for row in rows:
+                pdb.set_trace()
                 y_data[i] += data[row][y_axis]
         else:
             rows = np.where(data[:][x_axis] == x)
@@ -212,19 +214,30 @@ def multiline_graph(root, mainframe, data, headers, main_labels):
     l3.grid(row=5, column=1, padx=(10, 10), pady=(5, 10))
     multi_line_graph_labels.append(l3)
 
-        # Compare By Options Menu
-    compare_by_string = tk.StringVar(root)
-    compare_by_string.set(headers[0])
-    om1_options = [headers[0], headers[5]]
-    om1 = tk.OptionMenu(mainframe, compare_by_string, *om1_options)
-    om1.grid(row=5, column=2, padx=(10, 10), pady=(5, 10))
-    multi_line_graph_labels.append(om1)
-
-        # Compare Options Menus
+        # Compare Sub Options Menus
     comp1, comp1_string, comp2, comp2_string, comp3, comp3_string = create_compare_options(root, mainframe, data)
     multi_line_graph_labels.append(comp1)
     multi_line_graph_labels.append(comp2)
     multi_line_graph_labels.append(comp3)
+
+        # Compare Main Options Menu
+    compare_by_string = tk.StringVar(root)
+    compare_by_string.set(headers[0])
+    om1_options = [headers[0], headers[5]]
+    om1 = tk.OptionMenu(mainframe, compare_by_string, *om1_options, command= lambda t: change_compare_menus(comp1, comp1_string, comp2, comp2_string, comp3, comp3_string, compare_by_string.get(), data))
+    om1.grid(row=5, column=2, padx=(10, 10), pady=(5, 10))
+    multi_line_graph_labels.append(om1)
+
+        # Create Bar Graph Button
+    b1 = tk.Button(mainframe, text="Create Multi-line Graph", command= lambda: create_multiline(comp1_string, comp2_string, comp3_string, compare_by_string.get(), y_axis_string, data))
+    b1.grid(row=9, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
+    multi_line_graph_labels.append(b1)
+
+
+def change_compare_menus(menu1, menu1_string, menu2, menu2_string, menu3, menu3_string, main_string, data):
+    change_options(main_string, menu1_string, data, menu1)
+    change_options(main_string, menu2_string, data, menu2)
+    change_options(main_string, menu3_string, data, menu3)
 
 
 def create_compare_options(root, mainframe, data):
@@ -251,6 +264,32 @@ def create_compare_options(root, mainframe, data):
     change_options("county", comp3_string, data, comp3)
 
     return comp1, comp1_string, comp2, comp2_string, comp3, comp3_string
+
+
+def create_multiline(x1_string, x2_string, x3_string, compare_by_string, y_axis_string, data):
+    '''Create multi-line graph based on given data'''
+    # prepare variables
+    fig, ax = plt.subplots(figsize=(14, 5))
+    y_data = np.unique(data["year"])
+    x1_data = grab_data(compare_by_string, x1_string.get(), y_axis_string.get(), data)
+    x2_data = grab_data(compare_by_string, x2_string.get(), y_axis_string.get(), data)
+    x3_data = grab_data(compare_by_string, x3_string.get(), y_axis_string.get(), data)
+    pass
+
+def grab_data(compare_field, string, y_axis, data):
+    '''Grab data for the given string (for multi-line graph)'''
+    # Prepare Variables
+    x_data = np.zeros(len(np.unique(data["year"]),))
+    string = bytes(string[2:-1], 'utf-8')
+
+    # Collect Data
+    for i, year in enumerate(np.unique(data["year"])):
+        a = np.array(np.where(data[:]["year"] == year))
+        rows = a[np.isin(a, np.array(np.where(data[:][compare_field] == string)))]
+        for row in rows:
+            x_data[i] += data[row][y_axis]
+    return x_data
+
 
 
 def update_limiter(new_option, old_option, limit_menu, specify_string, limiter_string, data, limiter_menu):
