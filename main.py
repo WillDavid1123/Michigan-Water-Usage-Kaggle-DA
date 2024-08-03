@@ -229,7 +229,7 @@ def multiline_graph(root, mainframe, data, headers, main_labels):
     multi_line_graph_labels.append(om1)
 
         # Create Bar Graph Button
-    b1 = tk.Button(mainframe, text="Create Multi-line Graph", command= lambda: create_multiline(comp1_string, comp2_string, comp3_string, compare_by_string.get(), y_axis_string, data))
+    b1 = tk.Button(mainframe, text="Create Multi-line Graph", command= lambda: create_multiline(comp1_string.get(), comp2_string.get(), comp3_string.get(), compare_by_string.get(), y_axis_string.get(), data))
     b1.grid(row=9, column=1, padx=(10, 10), pady=(5, 10), columnspan=2)
     multi_line_graph_labels.append(b1)
 
@@ -268,13 +268,25 @@ def create_compare_options(root, mainframe, data):
 
 def create_multiline(x1_string, x2_string, x3_string, compare_by_string, y_axis_string, data):
     '''Create multi-line graph based on given data'''
-    # prepare variables
-    fig, ax = plt.subplots(figsize=(14, 5))
+    # Prepare variables
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.set_title(y_axis_string + " by Year per " + compare_by_string)
     y_data = np.unique(data["year"])
-    x1_data = grab_data(compare_by_string, x1_string.get(), y_axis_string.get(), data)
-    x2_data = grab_data(compare_by_string, x2_string.get(), y_axis_string.get(), data)
-    x3_data = grab_data(compare_by_string, x3_string.get(), y_axis_string.get(), data)
+    x1_data = grab_data(compare_by_string, x1_string, y_axis_string, data)
+    x2_data = grab_data(compare_by_string, x2_string, y_axis_string, data)
+    x3_data = grab_data(compare_by_string, x3_string, y_axis_string, data)
+
+    # Create Lines
+    ax.plot(y_data, x1_data, label=x1_string[2:-1])
+    ax.plot(y_data, x2_data, label=x2_string[2:-1])
+    ax.plot(y_data, x3_data, label=x3_string[2:-1])
+
+    # Show graph
+    ax.legend()
+    plt.show()
+    # pdb.set_trace()
     pass
+
 
 def grab_data(compare_field, string, y_axis, data):
     '''Grab data for the given string (for multi-line graph)'''

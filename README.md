@@ -20,5 +20,6 @@ Dev-Log
     <li>7-18-2024: Bar Graph day 7 (Final) - Bar graphs now show data with or without selected limiters, small optimizations to presentation. Added comments and spacing for code for readability.</li>
     <li>7-20-2024: Multi-line Graph day 1 - Started work on multi-line graphs, simplified code by making similar label creation its own function.</li>
     <li>7-21-2024: Multi-line Graph day 2 - Continued work on creating elements for multi-line window: added 'Compare' menus so users can select 3 data points to compare on a line graph</li>
-    <li>7-29-2024: Mulit-line Graph day 3 - Started work on creating actual graph; grabbing data for each x-axis point by year</li>
+    <li>7-29-2024: Multi-line Graph day 3 - Started work on creating actual graph; grabbing data for each x-axis point by year</li>
+    <li>8-3-2024: Multi-line Grapg day 4 (Final) - Finished creating graph for multiline comparisons, copare counties or industries in specific water usage per year</li>
 </ul>
